@@ -83,6 +83,9 @@ tbody tr:hover td{background:var(--gray-50);}
 .action-btn:hover{background:var(--gray-50);}
 .action-btn.danger{color:var(--red);border-color:var(--red-pale);}
 .action-btn.success{color:var(--green);border-color:var(--green-pale);}
+.action-btn.sync-btn{color:#7c3aed;border-color:#ede9fe;background:#faf5ff;}
+.action-btn.sync-btn:hover{background:#ede9fe;}
+.action-btn.sync-btn:disabled{opacity:.5;cursor:default;}
 .page{display:none;}
 .page.active{display:block;}
 .toast{position:fixed;bottom:24px;right:24px;background:var(--dark);color:#fff;padding:10px 18px;border-radius:99px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s;max-width:80vw;}
@@ -186,7 +189,7 @@ tbody tr:hover td{background:var(--gray-50);}
           <div class="table-title">Manajemen Pengguna</div>
           <input type="text" class="search-input" id="userSearch" placeholder="Cari email / nama..." oninput="renderUsers()">
         </div>
-        <table><thead><tr><th>Pengguna</th><th>Paket</th><th>Status</th><th>Halaman Terpakai/Hari</th><th>Aksi</th></tr></thead><tbody id="usersBody"><tr><td colspan="5" class="empty-state">Memuat…</td></tr></tbody></table>
+        <table><thead><tr><th>Pengguna</th><th>Paket</th><th>Status</th><th>Halaman Terpakai/Hari</th><th>Aksi</th><th>Sync</th></tr></thead><tbody id="usersBody"><tr><td colspan="6" class="empty-state">Memuat…</td></tr></tbody></table>
       </div>
     </div>
 
@@ -400,7 +403,10 @@ function renderUsers() {
       <td>
         <button class="action-btn ${u.blocked ? 'success' : 'danger'}" onclick="toggleBlock('${u.id}','${u.email}',${u.blocked})">${u.blocked ? 'Buka Blokir' : 'Blokir'}</button>
       </td>
-    </tr>`).join('') || '<tr><td colspan="5" class="empty-state">Tidak ada pengguna cocok pencarian</td></tr>';
+      <td>
+        <button class="action-btn sync-btn" id="syncBtn_${u.id}" onclick="syncUserPlan('${u.id}','${u.email}','${u.plan||'gratis'}',this)" title="Paksa sync paket ke konsumen">⟳ Sync</button>
+      </td>
+    </tr>`).join('') || '<tr><td colspan="6" class="empty-state">Tidak ada pengguna cocok pencarian</td></tr>';
 }
 async function toggleBlock(id, email, isBlocked) {
   const newVal = !isBlocked;
@@ -417,6 +423,31 @@ async function changePlanFree(id, email, newPlan) {
   await logAdminChange('ubah_paket_manual', email, 'Diubah ke paket ' + newPlan + ' oleh admin (gratis, tanpa bayar)');
   showToast('Paket ' + email + ' diubah ke ' + newPlan + ' ✓');
   loadUsers(); loadDashboard();
+}
+
+// ===== SYNC USER PLAN =====
+// Tulis penanda sync ke tabel 'sync_signals' di Supabase.
+// Konsumen akan membaca penanda ini saat halaman dimuat dan meng-update localStorage-nya.
+async function syncUserPlan(id, email, plan, btnEl) {
+  btnEl.disabled = true;
+  btnEl.textContent = '⟳ Sync...';
+
+  // Pastikan kolom plan sudah tersimpan (update ulang untuk memicu updated_at baru)
+  const { error } = await sb.from('profiles')
+    .update({ plan: plan, updated_at: new Date().toISOString() })
+    .eq('id', id);
+
+  if (error) {
+    showToast('Sync gagal: ' + error.message);
+    btnEl.disabled = false;
+    btnEl.textContent = '⟳ Sync';
+    return;
+  }
+
+  await logAdminChange('sync_plan', email, 'Force sync paket ' + plan + ' ke konsumen');
+  showToast('✓ Sync berhasil! Paket ' + email + ' = ' + plan + '. Pengguna perlu refresh halaman.');
+  btnEl.textContent = '✓ Done';
+  setTimeout(() => { btnEl.disabled = false; btnEl.textContent = '⟳ Sync'; }, 3000);
 }
 
 // ===== TRANSACTIONS =====
