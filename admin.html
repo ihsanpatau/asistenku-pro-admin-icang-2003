@@ -138,6 +138,7 @@ tbody tr:hover td{background:var(--gray-50);}
     <div class="nav-section-label">Konten &amp; Harga</div>
     <button class="sidebar-link" onclick="showPage('paket',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Paket &amp; Harga</button>
     <button class="sidebar-link" onclick="showPage('promo',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24H4a1 1 0 0 0-1 1v5.59a2 2 0 0 0 .59 1.41l9.58 9.59a2 2 0 0 0 2.82 0l4.6-4.6a2 2 0 0 0 0-2.82Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>Promo <span class="badge" id="navPromoBadge" style="background:var(--green);color:#fff;">–</span></button>
+    <button class="sidebar-link" onclick="showPage('promokilat',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Promo Kilat ⚡ <span class="badge" id="navFlashBadge" style="background:#9CA3AF;color:#fff;">OFF</span></button>
     <button class="sidebar-link" onclick="showPage('notifikasi',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Info &amp; Notifikasi</button>
     <button class="sidebar-link" onclick="showPage('kuota',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Saldo &amp; Kuota API</button>
     <div class="nav-section-label">Sistem</div>
@@ -258,6 +259,50 @@ tbody tr:hover td{background:var(--gray-50);}
       </div>
     </div>
 
+    <!-- PROMO KILAT -->
+    <div class="page" id="page-promokilat">
+      <div class="form-card">
+        <div class="form-card-title">Cara Kerja Promo Kilat ⚡</div>
+        <p style="font-size:12.5px;color:var(--gray-500);line-height:1.6;">
+          <b>Promo Kilat</b> adalah penawaran sementara yang muncul sebagai banner kuning di halaman Upgrade Paket.
+          Berbeda dengan Promo biasa (yang mengganti limit semua user), Promo Kilat adalah <b>penawaran beli akses 1 hari unlimited</b> dengan harga yang Anda tentukan.
+          User yang membeli akan mendapat akses unlimited selama durasi yang diatur.
+          Anda bisa nyalakan/matikan kapan saja. Saat <b>Tidak Aktif</b>, banner tidak muncul di website.
+        </p>
+      </div>
+      <div class="form-card">
+        <div class="pkg-head" style="margin-bottom:14px;">
+          <b>Pengaturan Promo Kilat</b>
+          <label style="margin-left:auto;font-size:12px;display:flex;align-items:center;gap:6px;">
+            <input type="checkbox" id="flashActive"> Aktif (Tampilkan di website)
+          </label>
+        </div>
+        <div class="form-group"><label class="form-label">Nama / Label Promo Kilat</label><input type="text" class="form-input" id="flashLabel" placeholder="Mis. Promo Kilat — 1 Hari Unlimited Rp20.000"></div>
+        <div class="form-group"><label class="form-label">Deskripsi Singkat (tampil di banner)</label><input type="text" class="form-input" id="flashDeskripsi" placeholder="Mis. Akses unlimited 1 hari penuh, cocok untuk deadline!"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Harga (Rp)</label><input type="number" class="form-input" id="flashHarga" value="20000" placeholder="20000"></div>
+          <div class="form-group"><label class="form-label">Durasi Akses (Hari)</label><input type="number" class="form-input" id="flashDurasi" value="1" placeholder="1"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Jatah Halaman / Hari (saat promo kilat)</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="number" class="form-input" id="flashHalaman" value="0" placeholder="0" style="flex:1;">
+              <label style="font-size:12px;display:flex;align-items:center;gap:5px;white-space:nowrap;"><input type="checkbox" id="flashHalamanUnlimited" checked> Unlimited</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Jatah Pesan DoktrAI / Hari (saat promo kilat)</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="number" class="form-input" id="flashPesan" value="0" placeholder="0" style="flex:1;">
+              <label style="font-size:12px;display:flex;align-items:center;gap:5px;white-space:nowrap;"><input type="checkbox" id="flashPesanUnlimited" checked> Unlimited</label>
+            </div>
+          </div>
+        </div>
+        <button class="topbar-btn primary" onclick="saveFlashPromo()">Simpan Promo Kilat</button>
+      </div>
+    </div>
+
     <!-- NOTIFIKASI -->
     <div class="page" id="page-notifikasi">
       <div class="form-card">
@@ -362,7 +407,7 @@ function showPage(id, btn) {
   document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
   document.getElementById('page-' + id)?.classList.add('active');
   if (btn) btn.classList.add('active');
-  const titles = { dashboard: 'Dashboard', users: 'Manajemen Pengguna', transaksi: 'Transaksi & Pembayaran', paket: 'Paket & Harga', promo: 'Promo', notifikasi: 'Info & Pemberitahuan', kuota: 'Saldo & Kuota API', pengaturan: 'Pengaturan Sistem', logs: 'Log Aktivitas' };
+  const titles = { dashboard: 'Dashboard', users: 'Manajemen Pengguna', transaksi: 'Transaksi & Pembayaran', paket: 'Paket & Harga', promo: 'Promo', promokilat: 'Promo Kilat ⚡', notifikasi: 'Info & Pemberitahuan', kuota: 'Saldo & Kuota API', pengaturan: 'Pengaturan Sistem', logs: 'Log Aktivitas' };
   document.getElementById('pageTitle').textContent = titles[id] || id;
   window.scrollTo(0, 0);
   document.getElementById('sidebar').classList.remove('open');
@@ -388,7 +433,7 @@ function handleLogout() { if (confirm('Keluar dari admin panel?')) { sb.auth.sig
 
 // ===== LOAD ALL =====
 async function loadAll() {
-  await Promise.all([loadDashboard(), loadUsers(), loadPackages(), loadPromo(), loadTransactions(), loadNotifications(), loadKuota(), loadSettings(), loadLogs()]);
+  await Promise.all([loadDashboard(), loadUsers(), loadPackages(), loadPromo(), loadFlashPromo(), loadTransactions(), loadNotifications(), loadKuota(), loadSettings(), loadLogs()]);
 }
 
 // ===== DASHBOARD =====
@@ -651,6 +696,49 @@ async function savePromo() {
   loadPromo();
 }
 
+
+// ===== FLASH PROMO (PROMO KILAT) =====
+async function loadFlashPromo() {
+  const { data, error } = await sb.from('flash_promo_settings').select('*').eq('id', 1).maybeSingle();
+  const badge = document.getElementById('navFlashBadge');
+  if (error || !data) {
+    if (badge) { badge.textContent = 'OFF'; badge.style.background = '#9CA3AF'; }
+    return;
+  }
+  document.getElementById('flashActive').checked = !!data.active;
+  document.getElementById('flashLabel').value = data.label || '';
+  document.getElementById('flashDeskripsi').value = data.deskripsi || '';
+  document.getElementById('flashHarga').value = data.harga || 20000;
+  document.getElementById('flashDurasi').value = data.durasi_hari || 1;
+  document.getElementById('flashHalaman').value = data.halaman_limit || 0;
+  document.getElementById('flashHalamanUnlimited').checked = data.halaman_unlimited !== false;
+  document.getElementById('flashPesan').value = data.pesan_limit || 0;
+  document.getElementById('flashPesanUnlimited').checked = data.pesan_unlimited !== false;
+  if (badge) {
+    badge.textContent = data.active ? 'ON' : 'OFF';
+    badge.style.background = data.active ? '#F59E0B' : '#9CA3AF';
+  }
+}
+
+async function saveFlashPromo() {
+  const payload = {
+    active: document.getElementById('flashActive').checked,
+    label: document.getElementById('flashLabel').value.trim() || 'Promo Kilat',
+    deskripsi: document.getElementById('flashDeskripsi').value.trim(),
+    harga: Number(document.getElementById('flashHarga').value || 20000),
+    durasi_hari: Number(document.getElementById('flashDurasi').value || 1),
+    halaman_unlimited: document.getElementById('flashHalamanUnlimited').checked,
+    halaman_limit: Number(document.getElementById('flashHalaman').value || 0),
+    pesan_unlimited: document.getElementById('flashPesanUnlimited').checked,
+    pesan_limit: Number(document.getElementById('flashPesan').value || 0),
+    updated_at: new Date().toISOString()
+  };
+  const { error } = await sb.from('flash_promo_settings').upsert({ id: 1, ...payload });
+  if (error) { showToast('Gagal: ' + error.message); return; }
+  await logAdminChange('ubah_flash_promo', null, JSON.stringify(payload));
+  showToast('Promo Kilat disimpan ✓ — langsung berlaku di website konsumen');
+  loadFlashPromo();
+}
 
 // ===== NOTIFICATIONS =====
 async function sendNotification() {
